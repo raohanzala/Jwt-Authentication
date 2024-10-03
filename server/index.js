@@ -86,6 +86,33 @@ app.post('/login', async (req, res) => {
     }
 })
 
+app.get('/getUsers', async (req, res)=> {
+    try {
+        const {page =1, limit = 5} = req.query
+        const skip = (page -1) * limit
+        const allUsers = await UserModel.find().skip(skip).limit(Number(limit))
+        const total = await UserModel.countDocuments()
+        const totalPages = Math.ceil(total/limit)
+
+        res.json({success : true, allUsers, message : 'All users are fetched', total, totalPages, currentPage : page })
+    } catch (error) {   
+        res.json({success : false, message : error.message})
+    }
+})
+
+app.delete('/logout/:id', async (req, res)=> {
+    console.log( 'response from server', req.params.id)
+    try{
+        const userId = req.params.id
+        const deletedUser = await UserModel.findByIdAndDelete(userId)
+        return res.json({success : true, message : 'Todo successfully Deleted', deletedUser})
+    }
+    catch(error){
+        console.log(error)
+        res.json({success : false, message : error.message})
+    }
+})
+
 
 app.listen(3001, () => {
     console.log('Server is running in port 3001')

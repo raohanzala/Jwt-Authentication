@@ -1,39 +1,24 @@
-import React, { useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import toast from 'react-hot-toast'
+import { AuthContext } from '../context'
 
 const signup = () => {
 
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [token, setToken] = useState('')
   const navigate = useNavigate()
+  const {register, token} = useContext(AuthContext)
 
   console.log(token)
-  
-  const handleSubmit = (e) => {
+  const handleSubmit = (e)=> {
     e.preventDefault()
-    axios.post('http://localhost:3001/register', { name, email, password })
-    .then((result) => {
-      
-      console.log(result)
-      console.log(!result.data.success)
-      if (!result.data.success) {
-        return toast.error(result.data.message)
-      }
-      setToken(result.data.token)
-        toast.success('You are successfully registered')
-        navigate('/home')
-      })
-      .catch((error) => {
-        console.error(error)
-        toast.error('Registration failed. Please try again');
-      })
-
-
+    register(name, email, password)
   }
+
+
 
 
   return (
