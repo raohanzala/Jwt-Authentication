@@ -10,13 +10,13 @@ export const AuthProvider = ({children})=> {
 
     const [allUsers, setAllUsers] = useState([])
     const [token, setToken] = useState(localStorage.getItem('token') || null)
-    const [isLoading, setIsLoading] = useState(true)
+    const [isLoading, setIsLoading] = useState(false)
     const navigate = useNavigate()
 
     const login = async (email, password) => {
+      toast.dismiss()
 
         try {
-            toast.dismiss()
             const response = await axios.post('http://localhost:3001/login', { email, password })
             console.log(response)
 
@@ -26,33 +26,20 @@ export const AuthProvider = ({children})=> {
                 toast.success('You are successfully Login')
                 navigate('/home')
             } else {
-                toast.dismiss()
              toast.error(response.data.message)
 
             }
         } catch (error) {
-                // toast.dismiss()
                 console.log(error)
                 toast.error(error.message)
         }
     }
 
-    const logout= async (id)=> {
-        // navigate('/home')
-        
-        try{
-
-            const response = await axios.delete(`http://localhost:3001/logout/${id}`)
+    const logout= ()=> {        
             setToken(null)
             localStorage.removeItem('token')
             toast.success('Logout successfully')
             navigate('/login')
-            console.log(response)
-           
-      }catch(error){
-        console.error(error)
-        toast.error('Something went wrong');
-      }
     }
 
       const register = async (name , email, password) => {
@@ -67,13 +54,11 @@ export const AuthProvider = ({children})=> {
           } else {
             toast.error(response.data.message);
           }
-          
         }
           catch(error) {
             console.error(error)
             toast.error('Registration failed. Please try again');
           }
-        
       }
 
       const fetchUsers = async (page , limit, setCurrentPage, setTotalPages) => {
